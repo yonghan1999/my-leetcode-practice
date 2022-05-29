@@ -5,30 +5,16 @@ struct Solution {}
 // to call it use self.isBadVersion(version)
 impl Solution {
     pub fn first_bad_version(&self, n: i32) -> i32 {
-        let mut l = 1;
-        let mut r = n;
-
-        let version = (l + r) / 2;
-        let mut firstCheck = self.isBadVersion(version);
-        if firstCheck {
-        }
-        loop {
-            let version = (l + r) / 2;
-            if self.isBadVersion(version) && version > l{
-                r = version - 1;
-            }
-            else {
-                return version;
+        let mut good: i64 = 0;
+        let mut bad: i64 = n as i64;
+        while bad - good > 1 {
+            let mid = (good + bad + 1) / 2;
+            if self.isBadVersion(mid as i32) {
+                bad = mid;
+            } else {
+                good = mid;
             }
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn it_works() {
-        let result = 2 + 2;
-        assert_eq!(result, 4);
+        bad as i32
     }
 }
