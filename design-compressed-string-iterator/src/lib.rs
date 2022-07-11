@@ -1,5 +1,7 @@
 struct StringIterator {
-    arr:Vec<char>
+    index: usize,
+    count: Vec<usize>,
+    data: Vec<char>,
 }
 
 
@@ -9,41 +11,51 @@ struct StringIterator {
  */
 impl StringIterator {
 
-    // 不能直接解析 超出时间显示，简单题这样好吗，这样不好 fk
     fn new(compressedString: String) -> Self {
-        let mut parse_arr : Vec<char> = Vec::new();
         let mut nums = 0;
         let mut digit = 1;
+        let mut count = vec![];
+        let mut data = vec![];
+
         for ch in compressedString.chars().rev() {
             if ch >= '0' && ch <= '9' {
                 nums = (ch as usize - 48) * digit + nums;
                 digit *= 10;
             } else {
-                for i in 0..nums{
-                    parse_arr.push(ch);
-                }
+                data.push(ch);
+                count.push(nums);
                 nums = 0;
                 digit = 1;
             }
         }
+
         Self {
-            arr:parse_arr
+            index: count.len() - 1,
+            count,
+            data,
         }
     }
 
     fn next(&mut self) -> char {
-        return match self.arr.pop() {
-            None => {
-                ' '
-            }
-            Some(x) => {
-                x
-            }
-        };
+        let count = self.count[self.index];
+
+        if count > 0 {
+            self.count[self.index] -= 1;
+            return self.data[self.index];
+        }
+
+        if self.index == 0 {
+            return ' ';
+        }
+
+        self.index -= 1;
+        let count = self.count[self.index];
+        self.count[self.index] -= 1;
+        return self.data[self.index];
     }
 
     fn has_next(&self) -> bool {
-        !self.arr.is_empty()
+        self.index > 0 || self.count[0] > 0
     }
 }
 
